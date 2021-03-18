@@ -37,7 +37,8 @@ export class EmptyPanelCreationService {
       queueIndex: index,
       queueId: foo,
       fileName: name,
-      color: ''
+      color: '',
+      assetId: null
     };
   }
 

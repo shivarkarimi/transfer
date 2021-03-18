@@ -4,4 +4,5 @@ export interface Panel {
   id: number;
   fileName: string;
   color: string;
+  assetId: string;
 }
