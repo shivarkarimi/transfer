@@ -1,17 +1,8 @@
-<h2>Ingest queue</h2>
+<h2>Transaction queue</h2>
 <table class="table">
-    <tr *ngFor="let queueItem of queue">
+    <tr *ngFor="let item of ingestQueue">
         <td>
-            {{queueItem.fileName}}
+            {{item.name}}
         </td>
     </tr>
 </table>
-
-<!-- <h2>Upload queue</h2>
-<table class="table">
-    <tr *ngFor="let queueItem of uploadQueue">
-        <td>
-            {{queueItem.fileName}}
-        </td>
-    </tr>
-</table> -->

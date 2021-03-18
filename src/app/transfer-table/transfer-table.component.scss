@@ -3,9 +3,14 @@
     height: 100%;
     background-color: #9dc1e4;
     table {
-        padding: 25px;
+        font-size: 12px;
+        padding: 10px;
         margin: 10px 0;
         width: 100%;
         box-shadow: 0 0 0 1px black inset;
+        td {
+            height: 50px;
+            display: block;
+        }
     }
 }

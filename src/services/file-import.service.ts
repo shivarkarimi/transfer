@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, from, interval, Observable, of } from 'rxjs';
-import { buffer, concatMap, debounce, delay, filter, flatMap, map, take, tap, toArray } from 'rxjs/operators';
+import { EMPTY, from, fromEvent, interval, Observable, of, Subject, timer } from 'rxjs';
+import { buffer, concatMap, debounce, delay, filter, flatMap, map, take, tap, toArray, bufferTime } from 'rxjs/operators';
 import { QueueItem } from 'src/models/queue-item';
 import { AssetUploadService } from './asset-upload.service';
 import { BulkImportService } from './bulk-import.service';
@@ -9,45 +9,25 @@ import { FileSystemHelperService } from './file-system-helper.service';
 @Injectable({ providedIn: 'root' })
 export class FileImportService {
 
-  private debounceBucket: QueueItem[] = [];
+  public importStream = new Subject<QueueItem>();
+  isPaused: boolean = false;
 
   constructor(
     private fileSystemHelperService: FileSystemHelperService,
     private assetUploadService: AssetUploadService,
     private bulkImportService: BulkImportService) { }
 
-  public import(queueItems: QueueItem[], isPaused: boolean): Observable<any> {
+  public listenToImport(): Observable<any> {
+    const debounceTime = 5000;
 
-    return from(queueItems)
+    return this.importStream
       .pipe(
         flatMap((qi: QueueItem) => this.fileSystemHelperService.update(qi)),
-        flatMap((qi: QueueItem) => (isPaused ? EMPTY : this.assetUploadService.upload(qi))),
-        filter(Boolean),
-        take(queueItems.length),
-        toArray(),
-        flatMap((qi: QueueItem[]) => this.debounce(qi)),
+        flatMap((qi: QueueItem) => (this.isPaused ? EMPTY : this.assetUploadService.upload(qi))),
+        bufferTime(debounceTime),
+        map((qi) => [].concat(...qi)),
         concatMap((qi: QueueItem[]) => this.bulkImportService.import(qi)),
-        take(1),
-        tap(() => this.debounceBucket = [])
       )
-  }
-
-  /**
-   * if the size of queueItems is more than 1 don't wait
-   * if the size is 1 wait 1000ms
-   */
-
-  private debounce(queueItems: QueueItem[]): Observable<QueueItem[]> {
-    let bufferTime = (queueItems.length > 1) ? 0 : 1000;
-    const bufferBy = interval(bufferTime);
-
-    return of(queueItems)
-      .pipe(
-        buffer(bufferBy),
-        map((qi: QueueItem[][]) => [].concat(...qi))
-      )
-
-
   }
 }
 
