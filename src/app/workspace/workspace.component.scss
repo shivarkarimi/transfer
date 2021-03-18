@@ -1,0 +1,27 @@
+div.panel {
+    padding: 25px;
+    text-align: center;
+    height: 1rem;
+    line-height: 1rem;
+    display: inline-block;
+    border: 1px solid gray;
+    margin: 5px;
+    span {
+        display: block;
+    }
+}
+
+.workspace {
+    min-height: 100px;
+    margin: 10px 0;
+    width: 100%;
+    box-shadow: 0 0 0 1px black inset;
+}
+
+:host {
+    width: 100%;
+}
+
+#btnImport {
+    float: right;
+}

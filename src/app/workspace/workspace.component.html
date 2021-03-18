@@ -1,0 +1,9 @@
+<H2> Workspace</H2>
+<div class="workspace">
+    <button (click)="importFile()" id="btnImport">Import file</button>
+    <div class="panel" *ngFor="let panel of panels">
+        <div class="thumbnail" [style.background]="panel.color">
+            <span>{{panel.name}}</span>
+        </div>
+    </div>
+</div>
