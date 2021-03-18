@@ -93,13 +93,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     const fileNames = [`${0}-${generateFileName()}`];
     this.ingestList = this.IngestQueueService.createQueueItems(fileNames);
 
+
     // synchronously add panels to workspace
     this.panelService.createEmptyPanels(this.ingestList);
 
     this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
   }
-
-
 }
 
-const generateFileName = () => Math.random().toString(36).substring(7)
+const generateFileName = () => Math.random().toString(36).substring(7);

@@ -17,14 +17,20 @@ export class FileImportService {
     private assetUploadService: AssetUploadService,
     private bulkImportService: BulkImportService) { }
 
-  public listenToImport(): Observable<any> {
+  public listenToImport(): Observable<QueueItem[]> {
     const debounceTime = 5000;
 
+    /**
+     * Note to debounce to work properly, should be Hot observable.
+     * doing from() does not work!
+     * So we have listening to subject
+     */
     return this.importStream
       .pipe(
         flatMap((qi: QueueItem) => this.fileSystemHelperService.update(qi)),
         flatMap((qi: QueueItem) => (this.isPaused ? EMPTY : this.assetUploadService.upload(qi))),
         bufferTime(debounceTime),
+        filter(x => (x && !!x.length)),
         map((qi) => [].concat(...qi)),
         concatMap((qi: QueueItem[]) => this.bulkImportService.import(qi)),
       )

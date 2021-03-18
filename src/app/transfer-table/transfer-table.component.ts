@@ -12,6 +12,7 @@ import { IngestQueueService } from 'src/services/ingest-queue.service';
 export class TransferTableComponent implements OnInit, OnDestroy {
 
   public ingestQueue: QueueItem[];
+  public buffer: QueueItem[];
   private destroy: Subject<void> = new Subject<void>();
 
   constructor(private fileImportService: FileImportService, private ingestQueueService: IngestQueueService) { }
@@ -24,7 +25,10 @@ export class TransferTableComponent implements OnInit, OnDestroy {
 
     this.fileImportService.listenToImport()
       .subscribe(
-        x => console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x)
+        x => {
+          this.buffer = x;
+          console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x)
+        }
       );
   }
 

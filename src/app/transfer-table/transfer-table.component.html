@@ -1,6 +1,15 @@
-<h2>Transaction queue</h2>
+<h2>Transaction</h2>
 <table class="table">
     <tr *ngFor="let item of ingestQueue">
+        <td>
+            {{item.name}}
+        </td>
+    </tr>
+</table>
+
+<h2>Buffer</h2>
+<table class="table">
+    <tr *ngFor="let item of buffer">
         <td>
             {{item.name}}
         </td>
