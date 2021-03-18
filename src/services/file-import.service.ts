@@ -18,6 +18,12 @@ export class FileImportService {
     private bulkImportService: BulkImportService) { }
 
   public listenToImport(): Observable<QueueItem[]> {
+    /**
+     * TODO:
+     * Update so that when
+     * if there are more than 1 items => upload immediately
+     * else set debounceTime to 5000
+     */
     const debounceTime = 5000;
 
     /**
