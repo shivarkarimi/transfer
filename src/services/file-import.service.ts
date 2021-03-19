@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { EMPTY, from, fromEvent, interval, Observable, of, Subject, timer } from 'rxjs';
-import { buffer, concatMap, debounce, delay, filter, flatMap, map, take, tap, toArray, bufferTime } from 'rxjs/operators';
+import { buffer, concatMap, debounce, delay, filter, flatMap, map, take, tap, toArray, bufferTime, finalize } from 'rxjs/operators';
 import { QueueItem } from 'src/models/queue-item';
 import { AssetUploadService } from './asset-upload.service';
 import { BulkImportService } from './bulk-import.service';
 import { FileSystemHelperService } from './file-system-helper.service';
+import { ChangeNotifierService } from './change-notifier.service';
 
 @Injectable({ providedIn: 'root' })
 export class FileImportService {
@@ -15,7 +16,8 @@ export class FileImportService {
   constructor(
     private fileSystemHelperService: FileSystemHelperService,
     private assetUploadService: AssetUploadService,
-    private bulkImportService: BulkImportService) { }
+    private bulkImportService: BulkImportService
+  ) { }
 
   public listenToImport(): Observable<QueueItem[]> {
     /**

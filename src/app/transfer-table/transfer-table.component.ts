@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { QueueItem } from 'src/models/queue-item';
+import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
 
@@ -15,7 +16,11 @@ export class TransferTableComponent implements OnInit, OnDestroy {
   public uploadedItems: QueueItem[];
   private destroy: Subject<void> = new Subject<void>();
 
-  constructor(private fileImportService: FileImportService, private ingestQueueService: IngestQueueService) { }
+  constructor(
+    private fileImportService: FileImportService,
+    private ingestQueueService: IngestQueueService,
+    private changeNotifierService: ChangeNotifierService
+  ) { }
 
   public ngOnInit(): void {
     this.ingestQueueService.ingestQueueStream
@@ -27,7 +32,8 @@ export class TransferTableComponent implements OnInit, OnDestroy {
       .subscribe(
         x => {
           this.uploadedItems = x;
-          console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x)
+          console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x);
+          this.changeNotifierService.notify();
         }
       );
   }

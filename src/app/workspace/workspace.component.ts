@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, flatMap, takeUntil } from 'rxjs/operators';
 import { Panel } from 'src/models/panel';
@@ -7,6 +7,7 @@ import { ConnectionMonitorService } from 'src/services/connection-monitor.servic
 import { FileImportService } from 'src/services/file-import.service';
 import { PanelService } from 'src/services/panel.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
+import { ChangeNotifierService } from 'src/services/change-notifier.service';
 
 /**
  * Notes:
@@ -58,10 +59,13 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   clicks: number = 0;
 
   constructor(
+    public zone: NgZone,
     private fileImportService: FileImportService,
     private panelService: PanelService,
     private connectionMonitorService: ConnectionMonitorService,
-    private IngestQueueService: IngestQueueService
+    private IngestQueueService: IngestQueueService,
+    private changeNotifierService: ChangeNotifierService
+
   ) { }
 
 
@@ -70,7 +74,17 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    this.changeNotifierService.changeStream
+      .subscribe(() => {
+        console.log('%c panels', 'background:#271cbb; color: #dc52fa', this.panels)
+        this.zone.run(() => { this.panels = this.panelService.sequencePanels })
+      });
+
     this.panelService.panelsStream
+      .pipe(
+        takeUntil(this.destroy)
+      )
       .subscribe(x => this.panels = x);
 
 
@@ -83,22 +97,31 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     //   .subscribe();
   }
 
-  importFile(): void {
+  importFile(total: number): void {
     this.clicks++;
     // Should not be able to Import when workspace is disabled (?)
     if (this.isWorkspaceDisabled) {
       return
     }
 
-    const fileNames = [`${0}-${generateFileName()}`];
-    this.ingestList = this.IngestQueueService.createQueueItems(fileNames);
-
+    this.ingestList = this.IngestQueueService.createQueueItems(generateFileNameList(total));
 
     // synchronously add panels to workspace
     this.panelService.createEmptyPanels(this.ingestList);
 
+    // emit ingest list into stream
     this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
   }
 }
 
 const generateFileName = () => Math.random().toString(36).substring(7);
+
+const generateFileNameList = (total) => {
+  const fileNames = [];
+
+  for (let index = 0; index < total; index++) {
+    fileNames.push(`${0}-${generateFileName()}`);
+  }
+
+  return fileNames;
+};

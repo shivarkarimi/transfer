@@ -1,12 +1,14 @@
 div.panel {
-    padding: 25px;
+    height: 100px;
+    width: 100px;
     text-align: center;
-    height: 1rem;
     line-height: 1rem;
     display: inline-block;
     border: 1px solid gray;
-    margin: 5px;
+    margin: 2px;
+    font-size: 10px;
     span {
+        font-size: 12px;
         display: block;
     }
 }

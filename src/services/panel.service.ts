@@ -9,7 +9,7 @@ export class PanelService {
   // Only for display immediately on screen
   public panelsStream: Subject<Panel[]> = new Subject<Panel[]>();
 
-  private sequencePanels: Panel[] = [];
+  public sequencePanels: Panel[] = [];
   private listCounter: number = 0;
 
   public createEmptyPanels(items: QueueItem[]): void {
