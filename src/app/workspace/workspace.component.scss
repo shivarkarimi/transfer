@@ -1,3 +1,15 @@
+:host {
+    width: 100%;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    #buttons {
+        align-self: flex-end;
+    }
+}
+
 div.panel {
     height: 100px;
     width: 100px;
@@ -18,12 +30,4 @@ div.panel {
     margin: 10px 0;
     width: 100%;
     box-shadow: 0 0 0 1px black inset;
-}
-
-:host {
-    width: 100%;
-}
-
-#btnImport {
-    float: right;
 }

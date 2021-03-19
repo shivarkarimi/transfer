@@ -1,14 +1,23 @@
-<H2> Workspace</H2>
-<p>Clicks counter: {{clicks}}</p>
-<button (click)="importFile(1)" id="btnImport">Import file</button>
-<button (click)="importFile(50)" id="btnImport">Import file 50</button>
+<div id="container">
+    <div>
+        <H2> Workspace</H2>
+        <p>Clicks counter: {{clicks}}</p>
+    </div>
 
-<div class="workspace">
-    <div class="panel" *ngFor="let panel of panels" [style.background]="panel.color">
-        <div class="thumbnail">
-            <span>Name:{{panel.fileName}}</span>
-            <span>AssetId: {{panel.assetId}}</span>
+    <div id="buttons">
+        <button id="btnImport">Pause</button>
+        <button (click)="importFile(1)" id="btnImport">Import file</button>
+        <button (click)="importFile(50)" id="btnImport">Import file 50</button>
+    </div>
+
+
+    <div class="workspace">
+        <div class="panel" *ngFor="let panel of panels" [style.background]="panel.color">
+            <div class="thumbnail">
+                <span>Name:{{panel.fileName}}</span>
+                <span>AssetId: {{panel.assetId}}</span>
+            </div>
+
         </div>
-
     </div>
 </div>
