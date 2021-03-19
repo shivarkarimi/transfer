@@ -10,7 +10,7 @@ export class AssetUploadService {
     return of(queueItems)
       .pipe(
         delay(10),
-        tap((qi: QueueItem) => qi.panel.assetId = 'AssetID')
+        tap((qi: QueueItem) => qi.panel.assetId = `${Math.floor(Math.random() * 100)}`)
       )
   }
 }

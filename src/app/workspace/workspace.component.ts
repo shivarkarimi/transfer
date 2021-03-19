@@ -120,7 +120,7 @@ const generateFileNameList = (total) => {
   const fileNames = [];
 
   for (let index = 0; index < total; index++) {
-    fileNames.push(`${0}-${generateFileName()}`);
+    fileNames.push(`${index}-${generateFileName()}`);
   }
 
   return fileNames;
