@@ -10,10 +10,11 @@ export class ConnectionMonitorService {
 
   pauseChangeStream: Subject<boolean> = new Subject<boolean>();
 
-  isPaused: boolean = false;
+  isImportPaused: boolean = false;
 
   public pause(): void {
-    this.pauseChangeStream.next(!this.isPaused);
+    this.isImportPaused = !this.isImportPaused
+    this.pauseChangeStream.next(this.isImportPaused);
   }
 
 }

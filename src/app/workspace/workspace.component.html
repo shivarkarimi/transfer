@@ -2,10 +2,11 @@
     <div>
         <H2> Workspace</H2>
         <p>Clicks counter: {{clicks}}</p>
+        <p>Paused: {{isImportPaused}}</p>
     </div>
 
     <div id="buttons">
-        <button id="btnImport">Pause</button>
+        <button (click)="pauseImport()" id="pauseImport">Pause</button>
         <button (click)="importFile(1)" id="btnImport">Import file</button>
         <button (click)="importFile(50)" id="btnImport">Import file 50</button>
     </div>

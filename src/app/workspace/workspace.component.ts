@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
-import { filter, flatMap, takeUntil } from 'rxjs/operators';
+import { filter, flatMap, takeUntil, tap } from 'rxjs/operators';
 import { Panel } from 'src/models/panel';
 import { OriginType, QueueItem } from 'src/models/queue-item';
 import { ConnectionMonitorService } from 'src/services/connection-monitor.service';
@@ -48,11 +48,11 @@ import { ChangeNotifierService } from 'src/services/change-notifier.service';
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   panels: Panel[] = [];
-  // is UI busy
-  isWorkspaceDisabled: boolean = false;
+
+  // to display on UI only
+  isImportPaused: boolean = false;
 
   // internet/vpn connection disruption or manual pause
-  paused: boolean = false;
 
   private destroy: Subject<void> = new Subject<void>();
   ingestList: QueueItem[] = [];
@@ -75,9 +75,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    this.isImportPaused = this.connectionMonitorService.isImportPaused;
+
     this.changeNotifierService.changeStream
       .subscribe(() => {
-        console.log('%c panels', 'background:#271cbb; color: #dc52fa', this.panels)
         this.zone.run(() => { this.panels = this.panelService.sequencePanels })
       });
 
@@ -89,20 +90,27 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
 
     // When un-pausing try to import again
-    // this.connectionMonitorService.pauseChangeStream
-    //   .pipe(
-    //     filter(x => !x),
-    //     flatMap(() => this.fileImportService.listenToImport(this.ingestList, this.paused))
-    //   )
-    //   .subscribe();
+    this.connectionMonitorService.pauseChangeStream
+      .pipe(
+        tap(x => this.isImportPaused = x),
+        tap((x) => console.log('%c xxx', 'background:#271cbb; color: #dc52fa', x)),
+        filter(x => !x),
+        tap((x) => console.log('%c zzz', 'background:#271cbb; color: #dc52fa', x)),
+        tap(() => {
+          if (this.ingestList.length) {
+            this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
+          }
+        })
+      )
+      .subscribe();
   }
 
   importFile(total: number): void {
     this.clicks++;
     // Should not be able to Import when workspace is disabled (?)
-    if (this.isWorkspaceDisabled) {
-      return
-    }
+    // if (this.isWorkspaceDisabled) {
+    //   return
+    // }
 
     this.ingestList = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL);
 
@@ -110,8 +118,17 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     this.panelService.createEmptyPanels(this.ingestList);
 
     // emit ingest list into stream
-    this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
+    if (!this.connectionMonitorService.isImportPaused) {
+      this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
+      this.ingestList = [];
+    }
+
   }
+
+  pauseImport() {
+    this.connectionMonitorService.pause();
+  }
+
 }
 
 const generateFileName = () => Math.random().toString(36).substring(7);

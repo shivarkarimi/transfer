@@ -71,7 +71,7 @@ export class FileImportService {
         break;
 
       case OriginType.MANUAL:
-        secondsToWait = 2;
+        secondsToWait = 0;
         break;
 
       default:
