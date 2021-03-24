@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, flatMap, takeUntil } from 'rxjs/operators';
 import { Panel } from 'src/models/panel';
-import { QueueItem } from 'src/models/queue-item';
+import { OriginType, QueueItem } from 'src/models/queue-item';
 import { ConnectionMonitorService } from 'src/services/connection-monitor.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { PanelService } from 'src/services/panel.service';
@@ -104,7 +104,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       return
     }
 
-    this.ingestList = this.IngestQueueService.createQueueItems(generateFileNameList(total));
+    this.ingestList = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL);
 
     // synchronously add panels to workspace
     this.panelService.createEmptyPanels(this.ingestList);
