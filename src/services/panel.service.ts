@@ -12,12 +12,14 @@ export class PanelService {
   public sequencePanels: Panel[] = [];
   private listCounter: number = 0;
 
-  public createEmptyPanels(items: QueueItem[]): void {
+  public createEmptyPanels(ingestList: QueueItem[]): void {
     const listId = this.listCounter++;
 
-    items.forEach((qi, index) => {
+    ingestList.forEach((qi, index) => {
       const panel = this.buildLocalPanel(index, qi.name, listId);
       qi.panel = panel;
+
+      // Just for the UI
       this.sequencePanels.push(panel)
     });
 

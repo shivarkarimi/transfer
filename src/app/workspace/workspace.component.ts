@@ -93,9 +93,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     this.connectionMonitorService.pauseChangeStream
       .pipe(
         tap(x => this.isImportPaused = x),
-        tap((x) => console.log('%c xxx', 'background:#271cbb; color: #dc52fa', x)),
         filter(x => !x),
-        tap((x) => console.log('%c zzz', 'background:#271cbb; color: #dc52fa', x)),
         tap(() => {
           if (this.ingestList.length) {
             this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
@@ -107,15 +105,13 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   importFile(total: number): void {
     this.clicks++;
-    // Should not be able to Import when workspace is disabled (?)
-    // if (this.isWorkspaceDisabled) {
-    //   return
-    // }
-
-    this.ingestList = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL);
+    const newQueueItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL);
 
     // synchronously add panels to workspace
-    this.panelService.createEmptyPanels(this.ingestList);
+    this.panelService.createEmptyPanels(newQueueItems);
+
+    // Add new QueueItems to the list
+    this.ingestList = this.ingestList.concat(newQueueItems);
 
     // emit ingest list into stream
     if (!this.connectionMonitorService.isImportPaused) {
