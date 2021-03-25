@@ -62,7 +62,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   // internet/vpn connection disruption or manual pause
 
   private destroy: Subject<void> = new Subject<void>();
-  ingestList: TransferItem[] = [];
   clicks: number = 0;
 
   constructor(
@@ -96,42 +95,53 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       )
       .subscribe(x => this.panels = x);
 
-
     // When un-pausing try to import again
     this.connectionMonitorService.pauseChangeStream
       .pipe(
         tap(x => this.isImportPaused = x),
         filter(x => !x),
         tap(() => {
-          if (this.ingestList.length) {
-            this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
-            this.ingestList = [];
+          if (this.IngestQueueService.ingestList.length) {
+            this.IngestQueueService.ingestList.forEach(x => this.fileImportService.importStream.next(x));
+            this.IngestQueueService.emptyList();
           }
         })
       )
       .subscribe();
+
+    this.fileImportService.retryStream
+      .pipe(
+        tap(() => {
+          if (!this.connectionMonitorService.isImportPaused) {
+            this.IngestQueueService.ingestList.forEach(x => {
+              if (x.status === TransferStatus.RETRY) {
+                this.fileImportService.importStream.next(x);
+              }
+            });
+          }
+        })
+      ).subscribe()
   }
 
   importFile(total: number, supported: boolean = true): void {
     this.clicks++;
-    const newQueueItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL, supported);
+    const newItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL, supported);
 
     // synchronously add panels to workspace
-    this.panelService.createEmptyPanels(newQueueItems);
+    this.panelService.createEmptyPanels(newItems);
 
     // Add new QueueItems to the list
-    this.ingestList = this.ingestList.concat(newQueueItems);
-
-    this.transferService.add(this.ingestList);
+    this.IngestQueueService.addItems(newItems);
+    this.transferService.add(this.IngestQueueService.ingestList);
 
 
     // emit ingest list into stream
     if (!this.connectionMonitorService.isImportPaused) {
-      this.ingestList.forEach(x => {
+      this.IngestQueueService.ingestList.forEach(x => {
         if (x.status !== TransferStatus.UNSUPPORTED)
           this.fileImportService.importStream.next(x);
       });
-      this.ingestList = [];
+      this.IngestQueueService.emptyList();
     }
   }
 

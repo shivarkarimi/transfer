@@ -22,7 +22,8 @@ export class TransferTableComponent implements OnInit, OnDestroy {
     public zone: NgZone,
     private fileImportService: FileImportService,
     private changeNotifierService: ChangeNotifierService,
-    private TransferService: TransferService
+    private TransferService: TransferService,
+    private ingestQueueService: IngestQueueService
   ) { }
 
 
@@ -33,7 +34,6 @@ export class TransferTableComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.changeNotifierService.changeStream
       .subscribe(() => {
-        console.log('%c CHANGE', 'background:#271cbb; color: #dc52fa',)
         this.zone.run(() => { this.transferUI = this.TransferService.transferList })
       });
 
@@ -47,7 +47,6 @@ export class TransferTableComponent implements OnInit, OnDestroy {
     this.fileImportService.listenToImport()
       .subscribe(
         x => {
-          // this.uploadedItems = x;
           console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x);
           this.changeNotifierService.notify();
         }
@@ -64,6 +63,12 @@ export class TransferTableComponent implements OnInit, OnDestroy {
 
   public remove(item: TransferItem): void {
     this.TransferService.remove(item);
+  }
+
+  public retry(item: TransferItem): void {
+    item.status = TransferStatus.RETRY;
+    this.ingestQueueService.addItems([item]);
+    this.fileImportService.retryStream.next();
   }
 
 }

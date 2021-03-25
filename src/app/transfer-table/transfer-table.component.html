@@ -5,6 +5,7 @@
         <tr>
             <th>Name</th>
             <th>Origin</th>
+            <th>Size</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -17,30 +18,14 @@
             {{getOrigin(item.origin)}}
         </td>
         <td>
+            {{item.fileSize}}MB
+        </td>
+        <td>
             {{getStatus(item.status)}}
         </td>
         <td>
             <button (click)="remove(item)" *ngIf="item.status === 0">Remove</button>
+            <button (click)="retry(item)" *ngIf="item.status === 1">Retry</button>
         </td>
     </tr>
 </table>
-
-
-<!-- <h2>Ingest item</h2>
-<table class="table">
-    <tr *ngFor="let item of ingestQueue">
-        <td>
-            {{item.name}}
-        </td>
-    </tr>
-</table> -->
-
-
-
-<!-- <table class="table">
-    <tr *ngFor="let item of uploadedItems">
-        <td>
-            {{item.name}}
-        </td>
-    </tr>
-</table> -->

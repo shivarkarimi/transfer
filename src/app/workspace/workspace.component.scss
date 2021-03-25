@@ -5,8 +5,12 @@
 #container {
     display: flex;
     flex-direction: column;
-    #buttons {
-        align-self: flex-end;
+}
+
+#buttons {
+    align-self: flex-end;
+    button {
+        margin: 0 2px;
     }
 }
 

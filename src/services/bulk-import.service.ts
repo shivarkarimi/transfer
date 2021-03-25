@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
-import { delay, flatMap, tap, toArray } from 'rxjs/operators';
+import { delay, filter, flatMap, tap, toArray } from 'rxjs/operators';
 import { TransferItem } from 'src/models/transfer-item';
 import { randomColor } from 'randomcolor';
 import { TransferStatus } from 'src/models/transfer-status';
@@ -20,6 +20,7 @@ export class BulkImportService {
     return of(items)
       .pipe(
         flatMap((items: TransferItem[]) => from(items)),
+        filter((item: TransferItem) => item.status !== TransferStatus.ERROR),
         tap((item: TransferItem) => item.panel.color = randomColor()),
         tap((item: TransferItem) => item.status = TransferStatus.DONE),
         toArray(),

@@ -6,12 +6,15 @@ import { OriginType } from "src/models/origin-type";
 import { AssetUploadService } from './asset-upload.service';
 import { BulkImportService } from './bulk-import.service';
 import { FileSystemHelperService } from './file-system-helper.service';
+import { TransferStatus } from 'src/models/transfer-status';
 
 @Injectable({ providedIn: 'root' })
 export class FileImportService {
 
   public importStream = new Subject<TransferItem>();
   public bufferByStream = new Subject<void>();
+  public retryStream = new Subject<void>();
+
   isPaused: boolean = false;
 
   private interval: any;
@@ -33,13 +36,17 @@ export class FileImportService {
         flatMap((qi: TransferItem) => this.fileSystemHelperService.update(qi)),
         flatMap((qi: TransferItem) => (this.isPaused ? EMPTY : this.assetUploadService.upload(qi))),
         tap((qi: TransferItem) => this.bufferBy(qi)),
-        //bufferTime(debounceTime),
         buffer(this.bufferByStream.asObservable()),
         tap(() => clearInterval(this.interval)),
         filter(x => (x && !!x.length)),
         map((qi) => [].concat(...qi)),
         concatMap((qi: TransferItem[]) => this.bulkImportService.import(qi)),
       )
+  }
+
+  retry(item: TransferItem): void {
+    item.status = TransferStatus.LOADED;
+    this.importStream.next(item);
   }
 
   /**
