@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+
 import { Panel } from 'src/models/panel';
 import { PanelStatus } from 'src/models/panel-status';
 import { TransferItem } from 'src/models/transfer-item';
+import { TransferStatus } from 'src/models/transfer-status';
 
 @Injectable({ providedIn: 'root' })
 export class PanelService {
@@ -17,6 +19,11 @@ export class PanelService {
     const listId = this.listCounter++;
 
     ingestList.forEach((qi, index) => {
+
+      if (qi.status === TransferStatus.UNSUPPORTED) {
+        return;
+      }
+
       const panel = this.buildLocalPanel(index, qi.name, listId);
       qi.panel = panel;
 

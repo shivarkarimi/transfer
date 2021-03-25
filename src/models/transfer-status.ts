@@ -1,7 +1,7 @@
 
 export enum TransferStatus {
-  LOADED,
   UNSUPPORTED,
+  LOADED,
   WAITING,
   UPLOADING,
   DONE,

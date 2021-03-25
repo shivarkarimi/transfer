@@ -8,9 +8,9 @@ export class IngestQueueService {
 
   ingestQueueStream: Subject<TransferItem[]> = new Subject<TransferItem[]>();
   // Move to QueueItem Service
-  createQueueItems(files: string[], origin: OriginType): TransferItem[] {
+  createQueueItems(files: string[], origin: OriginType, supported: boolean): TransferItem[] {
 
-    const queueItems = files.map(f => new TransferItem(f, origin));
+    const queueItems = files.map(f => new TransferItem(f, origin, supported));
     this.ingestQueueStream.next(queueItems);
 
     return queueItems;

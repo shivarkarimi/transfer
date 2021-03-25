@@ -2,14 +2,14 @@
     <div>
         <H2> Workspace</H2>
         <p>Clicks counter: {{clicks}}</p>
-        <p>Paused: {{isImportPaused}}</p>
+        <p id="isPaused" [style.background]="isImportPaused? 'red': 'green'">Paused: {{isImportPaused}}</p>
     </div>
 
     <div id="buttons">
         <button (click)="pauseImport()" id="pauseImport">Pause</button>
         <button (click)="importFile(1)" id="btnImport">Import file</button>
         <button (click)="importFile(50)" id="btnImport">Import file 50</button>
-        <button (click)="importUnsupported()" id="btnImport">Import unsupported</button>
+        <button (click)="importFile(1, false)" id="btnImport">Import unsupported</button>
     </div>
 
     <div class="workspace">

@@ -10,6 +10,7 @@ import { PanelService } from 'src/services/panel.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
 import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { TransferService } from 'src/services/transfer.service';
+import { TransferStatus } from 'src/models/transfer-status';
 
 /**
  * Notes:
@@ -104,15 +105,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         tap(() => {
           if (this.ingestList.length) {
             this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
+            this.ingestList = [];
           }
         })
       )
       .subscribe();
   }
 
-  importFile(total: number): void {
+  importFile(total: number, supported: boolean = true): void {
     this.clicks++;
-    const newQueueItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL);
+    const newQueueItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL, supported);
 
     // synchronously add panels to workspace
     this.panelService.createEmptyPanels(newQueueItems);
@@ -125,7 +127,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
     // emit ingest list into stream
     if (!this.connectionMonitorService.isImportPaused) {
-      this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
+      this.ingestList.forEach(x => {
+        if (x.status !== TransferStatus.UNSUPPORTED)
+          this.fileImportService.importStream.next(x);
+      });
       this.ingestList = [];
     }
   }

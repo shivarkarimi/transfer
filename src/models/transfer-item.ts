@@ -16,11 +16,11 @@ export class TransferItem {
     return !!this.fileSize && !!this.panel;
   }
 
-  constructor(name: string, origin: OriginType) {
+  constructor(name: string, origin: OriginType, supported: boolean = true) {
     this.name = name;
     this.waitingTime = new Date();
     this.origin = origin;
-    this.status = TransferStatus.LOADED;
+    this.status = supported ? TransferStatus.LOADED : TransferStatus.UNSUPPORTED;
   }
 }
 

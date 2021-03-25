@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { OriginType } from 'src/models/origin-type';
 import { TransferItem } from 'src/models/transfer-item';
 import { TransferStatus } from 'src/models/transfer-status';
-import { TransferItem } from 'src/models/transfer-item';
 import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
@@ -16,7 +15,6 @@ import { TransferService } from 'src/services/transfer.service';
 })
 export class TransferTableComponent implements OnInit, OnDestroy {
 
-  public ingestQueue: TransferItem[];
   public transferUI: Set<TransferItem> = new Set();
   private destroy: Subject<void> = new Subject<void>();
 
@@ -27,8 +25,12 @@ export class TransferTableComponent implements OnInit, OnDestroy {
     private TransferService: TransferService
   ) { }
 
-  public ngOnInit(): void {
 
+  public ngOnDestroy(): void {
+    this.destroy.next();
+  }
+
+  public ngOnInit(): void {
     this.changeNotifierService.changeStream
       .subscribe(() => {
         console.log('%c CHANGE', 'background:#271cbb; color: #dc52fa',)
@@ -52,16 +54,16 @@ export class TransferTableComponent implements OnInit, OnDestroy {
       );
   }
 
-  public ngOnDestroy(): void {
-    this.destroy.next();
-  }
-
   public getStatus(s: number): string {
     return TransferStatus[s].toString();
   }
 
   public getOrigin(s: number): string {
     return OriginType[s].toString();
+  }
+
+  public remove(item: TransferItem): void {
+    this.TransferService.remove(item);
   }
 
 }

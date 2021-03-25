@@ -5,8 +5,8 @@
         <tr>
             <th>Name</th>
             <th>Origin</th>
-            <!-- <th>Time</th> -->
             <th>Status</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tr *ngFor="let item of transferUI">
@@ -18,6 +18,9 @@
         </td>
         <td>
             {{getStatus(item.status)}}
+        </td>
+        <td>
+            <button (click)="remove(item)" *ngIf="item.status === 0">Remove</button>
         </td>
     </tr>
 </table>
