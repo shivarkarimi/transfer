@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { buffer, concatMap, filter, flatMap, map, tap } from 'rxjs/operators';
-import { QueueItem } from 'src/models/queue-item';
+import { TransferItem } from 'src/models/transfer-item';
 import { OriginType } from "src/models/origin-type";
 import { AssetUploadService } from './asset-upload.service';
 import { BulkImportService } from './bulk-import.service';
@@ -10,7 +10,7 @@ import { FileSystemHelperService } from './file-system-helper.service';
 @Injectable({ providedIn: 'root' })
 export class FileImportService {
 
-  public importStream = new Subject<QueueItem>();
+  public importStream = new Subject<TransferItem>();
   public bufferByStream = new Subject<void>();
   isPaused: boolean = false;
 
@@ -22,7 +22,7 @@ export class FileImportService {
     private bulkImportService: BulkImportService
   ) { }
 
-  public listenToImport(): Observable<QueueItem[]> {
+  public listenToImport(): Observable<TransferItem[]> {
     /**
      * Note: to debounce to work properly, should be Hot observable.
      * creating observable from() does not work!
@@ -30,15 +30,15 @@ export class FileImportService {
      */
     return this.importStream
       .pipe(
-        flatMap((qi: QueueItem) => this.fileSystemHelperService.update(qi)),
-        flatMap((qi: QueueItem) => (this.isPaused ? EMPTY : this.assetUploadService.upload(qi))),
-        tap((qi: QueueItem) => this.bufferBy(qi)),
+        flatMap((qi: TransferItem) => this.fileSystemHelperService.update(qi)),
+        flatMap((qi: TransferItem) => (this.isPaused ? EMPTY : this.assetUploadService.upload(qi))),
+        tap((qi: TransferItem) => this.bufferBy(qi)),
         //bufferTime(debounceTime),
         buffer(this.bufferByStream.asObservable()),
         tap(() => clearInterval(this.interval)),
         filter(x => (x && !!x.length)),
         map((qi) => [].concat(...qi)),
-        concatMap((qi: QueueItem[]) => this.bulkImportService.import(qi)),
+        concatMap((qi: TransferItem[]) => this.bulkImportService.import(qi)),
       )
   }
 
@@ -47,7 +47,7 @@ export class FileImportService {
    *
    * @param qi
    */
-  private bufferBy(qi: QueueItem) {
+  private bufferBy(qi: TransferItem) {
     const lastEmissionTime: Date = new Date();
     // cancel existing interval
     clearInterval(this.interval);
@@ -60,7 +60,7 @@ export class FileImportService {
     }, 100);
   }
 
-  private setSecondsToWait(qi: QueueItem): number {
+  private setSecondsToWait(qi: TransferItem): number {
     let secondsToWait: number = 0;
 
     switch (qi.origin) {

@@ -1,10 +1,10 @@
-import { QueueItem } from './queue-item';
+import { TransferItem } from './transfer-item';
 
-export class Queue implements Iterable<QueueItem> {
+export class Queue implements Iterable<TransferItem> {
 
-  private items: Array<QueueItem> = [];
+  private items: Array<TransferItem> = [];
 
-  public getIndex(item: QueueItem): number {
+  public getIndex(item: TransferItem): number {
     return this.items.indexOf(item);
   }
 
@@ -16,18 +16,18 @@ export class Queue implements Iterable<QueueItem> {
     return !this.items.length;
   }
 
-  public enqueue(qi: QueueItem[]): number {
+  public enqueue(qi: TransferItem[]): number {
     this.items.splice(this.items.length, 0, ...qi);
     return this.items.length;
   }
 
-  public dequeue(n: number = 1): QueueItem[] {
+  public dequeue(n: number = 1): TransferItem[] {
     return this.items.splice(0, n);
   }
 
-  public dequeueAll(predicate: Function = null): QueueItem[] {
-    const returnValue: QueueItem[] = [];
-    const remainder: QueueItem[] = [];
+  public dequeueAll(predicate: Function = null): TransferItem[] {
+    const returnValue: TransferItem[] = [];
+    const remainder: TransferItem[] = [];
 
     if (!predicate) {
       const curr = this.items;
@@ -46,7 +46,7 @@ export class Queue implements Iterable<QueueItem> {
     return returnValue;
   }
 
-  public getItem(index: number): QueueItem {
+  public getItem(index: number): TransferItem {
     return this.items[index];
   }
 
@@ -60,19 +60,19 @@ export class Queue implements Iterable<QueueItem> {
     return true;
   }
 
-  public chunk(chunk: number): QueueItem[][] {
+  public chunk(chunk: number): TransferItem[][] {
     if (!chunk || !this.items.length) {
       return [];
     }
 
-    const result: QueueItem[][] = [];
+    const result: TransferItem[][] = [];
     for (let i: number = 0; i < this.items.length; i += chunk) {
       result.push(this.items.slice(i, i + chunk));
     }
     return result;
   }
 
-  public *[Symbol.iterator](): IterableIterator<QueueItem> {
+  public *[Symbol.iterator](): IterableIterator<TransferItem> {
     for (const i of this.items) {
       yield i;
     }

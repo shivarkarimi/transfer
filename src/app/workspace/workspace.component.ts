@@ -2,13 +2,14 @@ import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, flatMap, takeUntil, tap } from 'rxjs/operators';
 import { Panel } from 'src/models/panel';
-import { QueueItem } from 'src/models/queue-item';
+import { TransferItem } from 'src/models/transfer-item';
 import { OriginType } from "src/models/origin-type";
 import { ConnectionMonitorService } from 'src/services/connection-monitor.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { PanelService } from 'src/services/panel.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
 import { ChangeNotifierService } from 'src/services/change-notifier.service';
+import { TransferService } from 'src/services/transfer.service';
 
 /**
  * Notes:
@@ -60,7 +61,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   // internet/vpn connection disruption or manual pause
 
   private destroy: Subject<void> = new Subject<void>();
-  ingestList: QueueItem[] = [];
+  ingestList: TransferItem[] = [];
   clicks: number = 0;
 
   constructor(
@@ -69,7 +70,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     private panelService: PanelService,
     private connectionMonitorService: ConnectionMonitorService,
     private IngestQueueService: IngestQueueService,
-    private changeNotifierService: ChangeNotifierService
+    private changeNotifierService: ChangeNotifierService,
+    private transferService: TransferService
 
   ) { }
 
@@ -117,6 +119,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
     // Add new QueueItems to the list
     this.ingestList = this.ingestList.concat(newQueueItems);
+
+    this.transferService.add(this.ingestList);
+
 
     // emit ingest list into stream
     if (!this.connectionMonitorService.isImportPaused) {

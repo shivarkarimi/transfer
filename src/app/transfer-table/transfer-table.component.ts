@@ -1,9 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { QueueItem } from 'src/models/queue-item';
+import { OriginType } from 'src/models/origin-type';
+import { TransferItem } from 'src/models/transfer-item';
+import { TransferStatus } from 'src/models/transfer-status';
+import { TransferItem } from 'src/models/transfer-item';
 import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
+import { TransferService } from 'src/services/transfer.service';
 
 @Component({
   selector: 'app-transfer-table',
@@ -12,26 +16,36 @@ import { IngestQueueService } from 'src/services/ingest-queue.service';
 })
 export class TransferTableComponent implements OnInit, OnDestroy {
 
-  public ingestQueue: QueueItem[];
-  public uploadedItems: QueueItem[];
+  public ingestQueue: TransferItem[];
+  public transferUI: Set<TransferItem> = new Set();
   private destroy: Subject<void> = new Subject<void>();
 
   constructor(
+    public zone: NgZone,
     private fileImportService: FileImportService,
-    private ingestQueueService: IngestQueueService,
-    private changeNotifierService: ChangeNotifierService
+    private changeNotifierService: ChangeNotifierService,
+    private TransferService: TransferService
   ) { }
 
   public ngOnInit(): void {
-    this.ingestQueueService.ingestQueueStream
+
+    this.changeNotifierService.changeStream
+      .subscribe(() => {
+        console.log('%c CHANGE', 'background:#271cbb; color: #dc52fa',)
+        this.zone.run(() => { this.transferUI = this.TransferService.transferList })
+      });
+
+    this.TransferService.transferStream
       .subscribe(
-        x => this.ingestQueue = x
+        x => {
+          this.transferUI = x
+        }
       );
 
     this.fileImportService.listenToImport()
       .subscribe(
         x => {
-          this.uploadedItems = x;
+          // this.uploadedItems = x;
           console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x);
           this.changeNotifierService.notify();
         }
@@ -40,6 +54,14 @@ export class TransferTableComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.destroy.next();
+  }
+
+  public getStatus(s: number): string {
+    return TransferStatus[s].toString();
+  }
+
+  public getOrigin(s: number): string {
+    return OriginType[s].toString();
   }
 
 }

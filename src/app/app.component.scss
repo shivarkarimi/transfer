@@ -4,10 +4,12 @@
     #main {
         width: 60%;
         align-items: stretch;
+        padding: 10px;
     }
     #side {
+        padding: 5px;
         width: 40%;
         align-items: stretch;
-        border: 1px solid teal;
+        border-left: 1px solid rgb(139, 139, 139);
     }
 }

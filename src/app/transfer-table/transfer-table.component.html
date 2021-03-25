@@ -1,5 +1,28 @@
 <h2>Transfer</h2>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Origin</th>
+            <!-- <th>Time</th> -->
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tr *ngFor="let item of transferUI">
+        <td>
+            {{item.name}}
+        </td>
+        <td>
+            {{getOrigin(item.origin)}}
+        </td>
+        <td>
+            {{getStatus(item.status)}}
+        </td>
+    </tr>
+</table>
+
+
 <!-- <h2>Ingest item</h2>
 <table class="table">
     <tr *ngFor="let item of ingestQueue">
@@ -8,6 +31,7 @@
         </td>
     </tr>
 </table> -->
+
 
 
 <!-- <table class="table">

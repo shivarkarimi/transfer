@@ -7,10 +7,14 @@
         padding: 10px;
         margin: 10px 0;
         width: 100%;
-        box-shadow: 0 0 0 1px rgb(143, 143, 143) inset;
+        thead th {
+            text-align: left;
+            border-bottom: 1px solid gray;
+        }
         td {
-            height: 50px;
-            display: block;
+            padding: 3px;
+            width: 33.3%;
+            font-size: 10px;
         }
     }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Panel } from 'src/models/panel';
 import { PanelStatus } from 'src/models/panel-status';
-import { QueueItem } from 'src/models/queue-item';
+import { TransferItem } from 'src/models/transfer-item';
 
 @Injectable({ providedIn: 'root' })
 export class PanelService {
@@ -13,7 +13,7 @@ export class PanelService {
   public sequencePanels: Panel[] = [];
   private listCounter: number = 0;
 
-  public createEmptyPanels(ingestList: QueueItem[]): void {
+  public createEmptyPanels(ingestList: TransferItem[]): void {
     const listId = this.listCounter++;
 
     ingestList.forEach((qi, index) => {

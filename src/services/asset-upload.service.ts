@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { delay, map, tap } from 'rxjs/operators';
-import { QueueItem } from 'src/models/queue-item';
-import { QueueStatus } from 'src/models/queue-status';
+import { delay, tap } from 'rxjs/operators';
+import { TransferItem } from 'src/models/transfer-item';
+import { TransferStatus } from 'src/models/transfer-status';
 
 @Injectable({ providedIn: 'root' })
 export class AssetUploadService {
 
-  public upload(queueItems: QueueItem): Observable<QueueItem> {
+  public upload(queueItems: TransferItem): Observable<TransferItem> {
     return of(queueItems)
       .pipe(
-        tap((qi: QueueItem) => qi.status = QueueStatus.UPLOADING),
+        tap((qi: TransferItem) => qi.status = TransferStatus.UPLOADING),
         delay(10),
-        tap((qi: QueueItem) => qi.panel.assetId = `${Math.floor(Math.random() * 100)}`),
-        tap((qi: QueueItem) => qi.status = QueueStatus.DONE),
+        tap((qi: TransferItem) => qi.panel.assetId = `${Math.floor(Math.random() * 100)}`),
+        tap((qi: TransferItem) => qi.status = TransferStatus.UPLOADING),
       )
   }
 }
