@@ -6,7 +6,7 @@
     </div>
 
     <div id="buttons">
-        <button (click)="pauseImport()" id="pauseImport">Pause</button>
+        <button (click)="pauseImport()" id="pauseImport" [innerHTML]="isImportPaused? 'UnPause': 'Pause' "></button>
         <button (click)="importFile(1)" id="btnImport">Import file</button>
         <button (click)="importFile(15)" id="btnImport">Import file 15</button>
         <button (click)="importFile(1, false)" id="btnImport">Import unsupported</button>

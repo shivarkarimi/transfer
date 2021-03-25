@@ -109,6 +109,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
+    // Add retry to ingest list
     this.fileImportService.retryStream
       .pipe(
         tap(() => {
@@ -116,6 +117,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
             this.IngestQueueService.ingestList.forEach(x => {
               if (x.status === TransferStatus.RETRY) {
                 this.fileImportService.importStream.next(x);
+                this.IngestQueueService.emptyList();
               }
             });
           }
