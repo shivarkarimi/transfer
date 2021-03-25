@@ -11,6 +11,7 @@ import { IngestQueueService } from 'src/services/ingest-queue.service';
 import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { TransferService } from 'src/services/transfer.service';
 import { TransferStatus } from 'src/models/transfer-status';
+import { generateFileNameList } from './generate-file-name-list';
 
 /**
  * Notes:
@@ -96,6 +97,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       .subscribe(x => this.panels = x);
 
     // When un-pausing try to import again
+    // TODO: Move to FileImportService
     this.connectionMonitorService.pauseChangeStream
       .pipe(
         tap(x => this.isImportPaused = x),
@@ -110,6 +112,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       .subscribe();
 
     // Add retry to ingest list
+    // TODO: Move to FileImportService
     this.fileImportService.retryStream
       .pipe(
         tap(() => {
@@ -125,7 +128,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       ).subscribe()
   }
 
-  importFile(total: number, supported: boolean = true): void {
+  // TODO: Move to FileImportService
+  public importFile(total: number, supported: boolean = true): void {
     this.clicks++;
     const newItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL, supported);
 
@@ -147,20 +151,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     }
   }
 
-  pauseImport() {
+  public pauseImport() {
     this.connectionMonitorService.pause();
   }
 
 }
 
-const generateFileName = () => Math.random().toString(36).substring(7);
 
-const generateFileNameList = (total) => {
-  const fileNames = [];
-
-  for (let index = 0; index < total; index++) {
-    fileNames.push(`${index}-${generateFileName()}`);
-  }
-
-  return fileNames;
-};
