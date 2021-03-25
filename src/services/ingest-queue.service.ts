@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
-import { OriginType, QueueItem } from "src/models/queue-item";
+import { QueueItem } from "src/models/queue-item";
+import { OriginType } from "src/models/origin-type";
 
 @Injectable({ providedIn: 'root' })
 export class IngestQueueService {
@@ -8,9 +9,8 @@ export class IngestQueueService {
   ingestQueueStream: Subject<QueueItem[]> = new Subject<QueueItem[]>();
   // Move to QueueItem Service
   createQueueItems(files: string[], origin: OriginType): QueueItem[] {
-    // TODO should filter files are that are exactly the same - with Set()
 
-    const queueItems = files.map(f => new QueueItem(f, origin));;
+    const queueItems = files.map(f => new QueueItem(f, origin));
     this.ingestQueueStream.next(queueItems);
 
     return queueItems;

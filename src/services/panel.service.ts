@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Panel } from 'src/models/panel';
+import { PanelStatus } from 'src/models/panel-status';
 import { QueueItem } from 'src/models/queue-item';
 
 @Injectable({ providedIn: 'root' })
@@ -34,7 +35,8 @@ export class PanelService {
       queueId: queueId,
       fileName: name,
       color: '',
-      assetId: null
+      assetId: null,
+      status: PanelStatus.PROCESSING
     };
   }
 

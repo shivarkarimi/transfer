@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, from, fromEvent, interval, Observable, of, Subject, timer } from 'rxjs';
-import { buffer, concatMap, debounce, delay, filter, flatMap, map, take, tap, toArray, bufferTime, finalize } from 'rxjs/operators';
-import { OriginType, QueueItem } from 'src/models/queue-item';
+import { EMPTY, Observable, Subject } from 'rxjs';
+import { buffer, concatMap, filter, flatMap, map, tap } from 'rxjs/operators';
+import { QueueItem } from 'src/models/queue-item';
+import { OriginType } from "src/models/origin-type";
 import { AssetUploadService } from './asset-upload.service';
 import { BulkImportService } from './bulk-import.service';
 import { FileSystemHelperService } from './file-system-helper.service';
-import { ChangeNotifierService } from './change-notifier.service';
 
 @Injectable({ providedIn: 'root' })
 export class FileImportService {
@@ -36,7 +36,6 @@ export class FileImportService {
         //bufferTime(debounceTime),
         buffer(this.bufferByStream.asObservable()),
         tap(() => clearInterval(this.interval)),
-        tap(x => console.log('%c xxx', 'background:#271cbb; color: #dc52fa', x)),
         filter(x => (x && !!x.length)),
         map((qi) => [].concat(...qi)),
         concatMap((qi: QueueItem[]) => this.bulkImportService.import(qi)),
@@ -49,7 +48,6 @@ export class FileImportService {
    * @param qi
    */
   private bufferBy(qi: QueueItem) {
-    console.log('%c buffer by called', 'background:#271cbb; color: #dc52fa',)
     const lastEmissionTime: Date = new Date();
     // cancel existing interval
     clearInterval(this.interval);
@@ -71,7 +69,7 @@ export class FileImportService {
         break;
 
       case OriginType.MANUAL:
-        secondsToWait = 0;
+        secondsToWait = 2;
         break;
 
       default:

@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, flatMap, takeUntil, tap } from 'rxjs/operators';
 import { Panel } from 'src/models/panel';
-import { OriginType, QueueItem } from 'src/models/queue-item';
+import { QueueItem } from 'src/models/queue-item';
+import { OriginType } from "src/models/origin-type";
 import { ConnectionMonitorService } from 'src/services/connection-monitor.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { PanelService } from 'src/services/panel.service';
@@ -39,6 +40,10 @@ import { ChangeNotifierService } from 'src/services/change-notifier.service';
  *        - HTTP bulk transcode request: batch bulk panel creation requests to the server (needs to wait for the apphelper and bulk panel creation to give us the assetID)
  *        - remove item from the list
  *  5 - Things can go wrong in any 3 concurrent panel/asset creation steps. Server should handle it.
+ *
+ *
+ * Define definition of DONE
+ *
  */
 
 @Component({
@@ -118,7 +123,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       this.ingestList.forEach(x => this.fileImportService.importStream.next(x));
       this.ingestList = [];
     }
-
   }
 
   pauseImport() {

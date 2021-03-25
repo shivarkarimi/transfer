@@ -1,3 +1,5 @@
+import { PanelStatus } from "./panel-status";
+
 export interface Panel {
   queueId: number;
   queueIndex: number;
@@ -5,4 +7,7 @@ export interface Panel {
   fileName: string;
   color: string;
   assetId: string;
+  status: PanelStatus;
 }
+
+

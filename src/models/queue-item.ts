@@ -1,16 +1,13 @@
+import { OriginType } from './origin-type';
 import { Panel } from './panel';
-
-export enum OriginType {
-  PHOTOSHOP,
-  MANUAL
-}
+import { QueueStatus } from './queue-status';
 
 export class QueueItem {
   name: string;
   waitingTime: Date;
   fileSize: number;
   panel: Panel;
-  status: any;
+  status: QueueStatus;
   origin: OriginType;
 
 
@@ -23,6 +20,7 @@ export class QueueItem {
     this.name = name;
     this.waitingTime = new Date();
     this.origin = origin;
+    this.status = QueueStatus.LOADED;
   }
 }
 

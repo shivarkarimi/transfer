@@ -4,7 +4,6 @@ import { delay, flatMap, tap, toArray } from 'rxjs/operators';
 import { QueueItem } from 'src/models/queue-item';
 import { randomColor } from 'randomcolor';
 
-
 @Injectable({ providedIn: 'root' })
 export class BulkImportService {
 

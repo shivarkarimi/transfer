@@ -1,8 +1,13 @@
-.content {
+:host {
     display: flex;
-    .panels {
+    flex-direction: row;
+    #main {
         width: 60%;
-        border: 1px solid gray;
-        padding: 10px;
+        align-items: stretch;
+    }
+    #side {
+        width: 40%;
+        align-items: stretch;
+        border: 1px solid teal;
     }
 }
