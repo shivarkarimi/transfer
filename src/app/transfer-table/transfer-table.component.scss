@@ -11,6 +11,14 @@
             text-align: left;
             border-bottom: 1px solid gray;
         }
+        td.fail {
+            font-weight: bold;
+            background-color: rgb(255, 112, 112);
+        }
+        td.warning {
+            font-weight: bold;
+            background-color: rgb(255, 248, 155);
+        }
         td {
             padding: 3px;
             width: 25%;

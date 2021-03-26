@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { delay, finalize, tap } from 'rxjs/operators';
+import { delay, tap } from 'rxjs/operators';
 import { PanelStatus } from 'src/models/panel-status';
 import { TransferItem } from 'src/models/transfer-item';
 import { TransferStatus } from 'src/models/transfer-status';
@@ -17,7 +17,7 @@ export class AssetUploadService {
         }),
         delay(10),
         tap((qi: TransferItem) => {
-          if (qi.fileSize > 35 && qi.fileSize < 80) {
+          if (qi.fileSize > 40 && qi.fileSize < 60) {
             qi.status = TransferStatus.ERROR;
             qi.panel.status = PanelStatus.FAILED;
           }

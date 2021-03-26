@@ -78,7 +78,6 @@ export class FileImportService {
       this.firstEmission = false;
       this.timeoutId = setTimeout(() => {
         this.drain();
-        console.log('%c Draining', 'background:#271cbb; color: #dc52fa', performance.now())
       }, this.getSecondsToWait(qi) * 1000);
     }
 
