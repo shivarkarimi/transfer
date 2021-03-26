@@ -12,6 +12,7 @@ import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { TransferService } from 'src/services/transfer.service';
 import { TransferStatus } from 'src/models/transfer-status';
 import { generateFileNameList } from './generate-file-name-list';
+import { TransferType } from 'src/models/transfer-type';
 
 /**
  * Notes:
@@ -76,13 +77,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   ) { }
 
-
   ngOnDestroy(): void {
     this.destroy.next();
   }
 
   ngOnInit(): void {
-
     this.isImportPaused = this.connectionMonitorService.isImportPaused;
 
     this.changeNotifierService.changeStream
@@ -131,7 +130,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   // TODO: Move to FileImportService
   public importFile(total: number, supported: boolean = true): void {
     this.clicks++;
-    const newItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL, supported);
+    const newItems = this.IngestQueueService.createQueueItems(generateFileNameList(total), OriginType.MANUAL, TransferType.Upload, supported);
 
     // synchronously add panels to workspace
     this.panelService.createEmptyPanels(newItems);
@@ -140,6 +139,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     this.IngestQueueService.addItems(newItems);
     this.transferService.add(this.IngestQueueService.ingestList);
 
+    if (this.connectionMonitorService.isImportPaused) {
+      this.IngestQueueService.ingestList.forEach(x => {
+        x.status = TransferStatus.WAITING;
+      });
+    }
 
     // emit ingest list into stream
     if (!this.connectionMonitorService.isImportPaused) {

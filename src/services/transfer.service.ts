@@ -1,8 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
-import { OriginType } from "src/models/origin-type";
 import { TransferItem } from "src/models/transfer-item";
-import { TransferStatus } from "src/models/transfer-status";
 
 
 @Injectable({ providedIn: 'root' })

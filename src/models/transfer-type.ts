@@ -1,6 +1,5 @@
 
 export enum TransferType {
   Upload,
-  Download,
-  FileHash
+  Download
 }

@@ -1,5 +1,7 @@
 import { TransferItem } from './transfer-item';
-
+/**
+ * UNUSED - Delete
+ */
 export class Queue implements Iterable<TransferItem> {
 
   private items: Array<TransferItem> = [];

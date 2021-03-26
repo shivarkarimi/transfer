@@ -18,7 +18,7 @@
             {{getOrigin(item.origin)}}
         </td>
         <td>
-            {{item.fileSize}}<span *ngIf="item.status !== 0">MB</span>
+            <span [innerHTML]="getTransferType(item.transferType)"></span> {{item.fileSize}}<span *ngIf="item.status !== 0 || item.transferType === 1">MB</span>
         </td>
         <td [ngClass]="{'fail': item.status === 1, 'warning':item.status === 0 }">
             {{getStatus(item.status)}}

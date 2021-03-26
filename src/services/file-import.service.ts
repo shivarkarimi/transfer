@@ -25,7 +25,7 @@ export class FileImportService {
     private bulkImportService: BulkImportService
   ) { }
 
-  public listenToImport(): Observable<TransferItem[]> {
+  public listenToImport(): Observable<TransferItem> {
     /**
      * Note: to debounce to work properly, should be Hot observable.
      * creating observable from() does not work!

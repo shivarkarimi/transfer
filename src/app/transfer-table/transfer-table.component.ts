@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { OriginType } from 'src/models/origin-type';
 import { TransferItem } from 'src/models/transfer-item';
 import { TransferStatus } from 'src/models/transfer-status';
+import { TransferType } from 'src/models/transfer-type';
 import { ChangeNotifierService } from 'src/services/change-notifier.service';
 import { FileImportService } from 'src/services/file-import.service';
 import { IngestQueueService } from 'src/services/ingest-queue.service';
@@ -46,7 +47,7 @@ export class TransferTableComponent implements OnInit, OnDestroy {
 
     this.fileImportService.listenToImport()
       .subscribe(
-        x => {
+        () => {
           this.changeNotifierService.notify();
         }
       );
@@ -58,6 +59,10 @@ export class TransferTableComponent implements OnInit, OnDestroy {
 
   public getOrigin(s: number): string {
     return OriginType[s].toString();
+  }
+
+  public getTransferType(s: number): string {
+    return s ? '&#8595;' : '&#8593;';
   }
 
   public remove(item: TransferItem): void {
