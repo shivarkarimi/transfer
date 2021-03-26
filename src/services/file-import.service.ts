@@ -35,9 +35,11 @@ export class FileImportService {
       .pipe(
         flatMap((qi: TransferItem) => this.fileSystemHelperService.update(qi)),
         flatMap((qi: TransferItem) => (this.isPaused ? EMPTY : this.assetUploadService.upload(qi))),
-        tap((qi: TransferItem) => this.bufferBy(qi)),
+        // tap((qi: TransferItem) => this.bufferByMovingInterval(qi)),
+        tap((qi: TransferItem) => this.bufferByMaxInterval(qi)),
         buffer(this.bufferByStream.asObservable()),
-        tap(() => clearInterval(this.interval)),
+        // tap(() => clearInterval(this.interval)),
+        tap(() => this.resetBuffer()),
         filter(x => (x && !!x.length)),
         map((qi) => [].concat(...qi)),
         concatMap((qi: TransferItem[]) => this.bulkImportService.import(qi)),
@@ -54,20 +56,45 @@ export class FileImportService {
    *
    * @param qi
    */
-  private bufferBy(qi: TransferItem) {
+  private bufferByMovingInterval(qi: TransferItem) {
     const lastEmissionTime: Date = new Date();
     // cancel existing interval
     clearInterval(this.interval);
 
     this.interval = setInterval(() => {
       const now = new Date();
-      if (now.getSeconds() - lastEmissionTime.getSeconds() > this.setSecondsToWait(qi)) {
-        this.bufferByStream.next();
+      if (now.getSeconds() - lastEmissionTime.getSeconds() > this.getSecondsToWait(qi)) {
+        this.drain()
       }
     }, 100);
   }
 
-  private setSecondsToWait(qi: TransferItem): number {
+
+  private firstEmission: boolean = true;
+  private timeoutId: any;
+
+  private bufferByMaxInterval(qi: TransferItem) {
+    if (this.firstEmission) {
+      this.firstEmission = false;
+      this.timeoutId = setTimeout(() => {
+        this.drain();
+        console.log('%c Draining', 'background:#271cbb; color: #dc52fa', performance.now())
+      }, this.getSecondsToWait(qi) * 1000);
+    }
+
+  }
+
+  private drain(): void {
+    this.bufferByStream.next();
+  }
+
+  private resetBuffer(): void {
+    clearInterval(this.timeoutId);
+    this.firstEmission = true;
+  }
+
+
+  private getSecondsToWait(qi: TransferItem): number {
     let secondsToWait: number = 0;
 
     switch (qi.origin) {
@@ -76,7 +103,7 @@ export class FileImportService {
         break;
 
       case OriginType.MANUAL:
-        secondsToWait = 2;
+        secondsToWait = 5;
         break;
 
       default:
