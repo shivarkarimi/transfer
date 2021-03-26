@@ -4,6 +4,7 @@ import { delay, filter, flatMap, tap, toArray } from 'rxjs/operators';
 import { TransferItem } from 'src/models/transfer-item';
 import { randomColor } from 'randomcolor';
 import { TransferStatus } from 'src/models/transfer-status';
+import { PanelStatus } from 'src/models/panel-status';
 
 @Injectable({ providedIn: 'root' })
 export class BulkImportService {
@@ -23,8 +24,10 @@ export class BulkImportService {
         filter((item: TransferItem) => item.status !== TransferStatus.ERROR),
         tap((item: TransferItem) => item.panel.color = randomColor()),
         tap((item: TransferItem) => item.status = TransferStatus.DONE),
+        tap((item: TransferItem) => item.panel.status = PanelStatus.SUCCESS),
         toArray(),
-        delay(100)
+        tap(x => console.log('%c Bulk Upload', 'background:#271cbb; color: #dc52fa', x)),
+        delay(50)
       )
   }
 

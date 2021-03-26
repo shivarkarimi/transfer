@@ -1,6 +1,6 @@
 <div id="container">
     <div>
-        <H2> Workspace</H2>
+        <H2>Workspace</H2>
         <p>Clicks counter: {{clicks}}</p>
         <p id="isPaused" [style.background]="isImportPaused? 'red': 'green'">Paused: {{isImportPaused}}</p>
     </div>
@@ -13,10 +13,11 @@
     </div>
 
     <div class="workspace">
-        <div class="panel" *ngFor="let panel of panels" [style.background]="panel.color">
+        <div class="panel" *ngFor="let panel of panels" [style.background]="panel.color" [ngClass]="{'fail': panel.status === 0}">
             <div class="thumbnail">
-                <span>Name:{{panel.fileName}}</span>
-                <span>AssetId: {{panel.assetId}}</span>
+                <button *ngIf="panel.status === 0" class="retry">X</button>
+                <span class="name">{{panel.fileName}}</span>
+                <span class="assetId">AssetId: {{panel.assetId}}</span>
             </div>
 
         </div>

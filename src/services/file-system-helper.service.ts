@@ -18,7 +18,7 @@ export class FileSystemHelperService {
           }
           return item
         }),
-        delay(100),
+        delay(50),
       )
   }
 

@@ -47,7 +47,6 @@ export class TransferTableComponent implements OnInit, OnDestroy {
     this.fileImportService.listenToImport()
       .subscribe(
         x => {
-          console.log('%c IMPORT UPDATE', 'background:#271cbb; color: #dc52fa', x);
           this.changeNotifierService.notify();
         }
       );
